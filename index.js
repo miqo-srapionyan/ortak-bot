@@ -93,8 +93,8 @@ class OrtakScheduler {
         if (!storedId || latestId > storedId) {
             console.log('New collection detected:', latestId, latestSlug);
             await this.sendEmail(
-                'Alert: New Collection on Ortak: ' + latestSlug,
-                'A new collection has been added to Ortak. ' + latestSlug
+                `Alert: New Collection on Ortak: ${this.ORTAK_BASE_URL}/collections/${latestSlug}/nfts`,
+                `A new collection has been added to Ortak. ${this.ORTAK_BASE_URL}/collections/${latestSlug}/nfts`
             );
             this.saveLatestItem(latestItem);
         } else {

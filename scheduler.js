@@ -1,13 +1,14 @@
-require('dotenv').config(); // Load environment variables from .env
-const fs = require('fs');
+const { api: { ortakBaseURL }, telegram: { token, chatId }, output: { jsonDB } } = require('./config')
 const TelegramBot = require('node-telegram-bot-api');
+const FileHandler = require('./services/file_handler');
 
-class OrtakScheduler {
+class OrtakScheduler extends FileHandler {
     constructor() {
-        this.JSON_DB = process.env.JSON_DB;
-        this.ORTAK_BASE_URL = process.env.ORTAK_BASE_URL;
-        this.BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-        this.CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+        super();
+        this.JSON_DB = jsonDB;
+        this.ORTAK_BASE_URL = ortakBaseURL;
+        this.BOT_TOKEN = token;
+        this.CHAT_ID = chatId;
         this.bot = new TelegramBot(this.BOT_TOKEN, { polling: false }); // Create a bot instance
     }
 
@@ -47,21 +48,19 @@ class OrtakScheduler {
             return data.data.items[0];
         } catch (error) {
             console.error('Error fetching data:', error);
+
             return null;
         }
     }
 
     loadStoredId() {
-        if (fs.existsSync(this.JSON_DB)) {
-            const fileData = fs.readFileSync(this.JSON_DB, 'utf-8');
-            return JSON.parse(fileData).id;
-        }
+        const fileData = this.readFile(this.jsonDB);
 
-        return null;
+        return fileData?.id;
     }
 
     saveLatestItem(latestItem) {
-        fs.writeFileSync(this.JSON_DB, JSON.stringify(latestItem, null, 2));
+        this.writeToFile(latestItem, this.JSON_DB)
     }
 
     async processData() {

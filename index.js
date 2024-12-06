@@ -1,40 +1,22 @@
 require('dotenv').config(); // Load environment variables from .env
 const fs = require('fs');
-const nodemailer = require('nodemailer');
+const TelegramBot = require('node-telegram-bot-api');
 
 class OrtakScheduler {
     constructor() {
         this.JSON_DB = process.env.JSON_DB;
         this.ORTAK_BASE_URL = process.env.ORTAK_BASE_URL;
-        this.EMAIL_HOST = process.env.EMAIL_HOST;
-        this.EMAIL_PORT = process.env.EMAIL_PASSWORD;
-        this.EMAIL_USER = process.env.EMAIL_USER;
-        this.EMAIL_PASS = process.env.EMAIL_PASS;
-        this.RECIPIENTS = process.env.RECIPIENTS.split(',');
+        this.BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+        this.CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+        this.bot = new TelegramBot(this.BOT_TOKEN, { polling: false }); // Create a bot instance
     }
 
-    async sendEmail(subject, text) {
-        const transporter = nodemailer.createTransport({
-            host: this.EMAIL_HOST,
-            port: this.EMAIL_PORT,
-            auth: {
-                user: this.EMAIL_USER,
-                pass: this.EMAIL_PASS
-            }
-        });
-
-        const mailOptions = {
-            from: this.EMAIL_USER,
-            to: this.RECIPIENTS,
-            subject: subject,
-            text: text
-        };
-
+    async sendTelegramMessage(message) {
         try {
-            await transporter.sendMail(mailOptions);
-            console.log('Alert email sent successfully.');
+            await this.bot.sendMessage(this.CHAT_ID, message);
+            console.log('Alert sent to Telegram successfully.');
         } catch (error) {
-            console.error('Error sending email:', error);
+            console.error('Error sending Telegram message:', error);
         }
     }
 
@@ -92,9 +74,8 @@ class OrtakScheduler {
 
         if (!storedId || latestId > storedId) {
             console.log('New collection detected:', latestId, latestSlug);
-            await this.sendEmail(
-                `Alert: New Collection on Ortak: ${this.ORTAK_BASE_URL}/collections/${latestSlug}/nfts`,
-                `A new collection has been added to Ortak. ${this.ORTAK_BASE_URL}/collections/${latestSlug}/nfts`
+            await this.sendTelegramMessage(
+                `🚨 Alert: New Collection on Ortak!\n\nName: ${latestItem.name}\nID: ${latestId}\nLink: ${this.ORTAK_BASE_URL}/collections/${latestSlug}/nfts`
             );
             this.saveLatestItem(latestItem);
         } else {

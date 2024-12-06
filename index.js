@@ -54,7 +54,7 @@ class OrtakScheduler {
     loadStoredId() {
         if (fs.existsSync(this.JSON_DB)) {
             const fileData = fs.readFileSync(this.JSON_DB, 'utf-8');
-            return JSON.parse(fileData).latestId;
+            return JSON.parse(fileData).id;
         }
 
         return null;
@@ -75,11 +75,12 @@ class OrtakScheduler {
         if (!storedId || latestId > storedId) {
             console.log('New collection detected:', latestId, latestSlug);
             await this.sendTelegramMessage(
-                `🚨 Alert: New Collection on Ortak!\n\nName: ${latestItem.name}\nID: ${latestId}\nLink: ${this.ORTAK_BASE_URL}/collections/${latestSlug}/nfts`
+                `🚨 Alert: New Collection on Ortak!\n\n
+                Name: ${latestItem.name}\n
+                ID: ${latestId}\n
+                Link: ${this.ORTAK_BASE_URL}/collections/${latestSlug}/nfts`
             );
             this.saveLatestItem(latestItem);
-        } else {
-            console.log('No new collection detected.');
         }
     }
 

@@ -74,10 +74,11 @@ class OrtakScheduler extends FileHandler {
         if (!storedId || latestId > storedId) {
             console.log('New collection detected:', latestId, latestSlug);
             await this.sendTelegramMessage(
-                `🚨 Alert: New Collection on Ortak!\n\n
-                Name: ${latestItem.name}\n
-                ID: ${latestId}\n
-                Link: ${this.ORTAK_BASE_URL}/collections/${latestSlug}/nfts`
+                `🚨 Alert: New Collection on Ortak!
+                Name: ${latestItem.name}
+                ID: ${latestId}
+                Link: ${this.ORTAK_BASE_URL}/collections/${latestSlug}/nfts
+                Homepage: ${this.ORTAK_BASE_URL}`
             );
             this.saveLatestItem(latestItem);
         }
@@ -91,4 +92,4 @@ class OrtakScheduler extends FileHandler {
 
 // Initialize and start the scheduler
 const scheduler = new OrtakScheduler();
-scheduler.startScheduler(30); // Runs every 30 minutes
+scheduler.startScheduler(10); // Runs every 10 minutes

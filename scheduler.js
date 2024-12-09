@@ -54,7 +54,7 @@ class OrtakScheduler extends FileHandler {
     }
 
     loadStoredId() {
-        const fileData = this.readFile(this.jsonDB);
+        const fileData = this.readFile(this.JSON_DB);
 
         return fileData?.id;
     }
